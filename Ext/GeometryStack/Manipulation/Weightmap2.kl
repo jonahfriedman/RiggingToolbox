@@ -292,9 +292,9 @@ function Weightmap2.connect!( PolygonMesh mesh, Xfo meshTransform){
 }
 
 /// Displays the weightmap in the viewport using an overlay shader to render the painted region.
-/// \param on PAss True or False to enable/disable display of the weightmap.
-function Weightmap2.display!(Boolean on){
-  if(on){
+/// \param state PAss True or False to enable/disable display of the weightmap.
+function Weightmap2.display!(Boolean state){
+  if(state){
     if(!this.handle){
       InlineDrawing drawing = OGLInlineDrawing_GetInstance();
       this.handle = DrawingHandle();

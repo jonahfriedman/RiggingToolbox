@@ -59,15 +59,15 @@ function UInt32 getGeomVersion(Geometry geometry) {
   // Note: we need 'getVersion' to be part of the Geometry interface. 
   PolygonMesh mesh = geometry;
   if(mesh)
-    return mesh.version;
+    return mesh.getVersion();
   else{
     Lines lines = geometry;
     if(lines)
-      return lines.version;
+      return lines.getVersion();
     else{
       Points points = geometry;
       if(points)
-        return points.version;
+        return points.getVersion();
     }
   }
   setError("Invalid Geometry type:" + geometry.type());

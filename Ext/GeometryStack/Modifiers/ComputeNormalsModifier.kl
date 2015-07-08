@@ -167,14 +167,14 @@ function ComputeNormalsModifier.setupRendering!(){
 
 
 function JSONDictValue ComputeNormalsModifier.saveJSON(PersistenceContext persistenceContext){
-  JSONDictValue json = this.parent#saveJSON(persistenceContext);
+  JSONDictValue json = this.parent.saveJSON(persistenceContext);
   json.setScalar('hardAngle', this.hardAngle);
   json.setBoolean('displayDebugging', this.displayDebugging);
   return json;
 }
 
 function ComputeNormalsModifier.loadJSON!(PersistenceContext persistenceContext, JSONDictValue json){
-  this.parent#loadJSON(persistenceContext, json);
+  this.parent.loadJSON(persistenceContext, json);
   if(json.has('hardAngle'))
     this.hardAngle = json.getScalar('hardAngle');
   if(json.has('displayDebugging'))

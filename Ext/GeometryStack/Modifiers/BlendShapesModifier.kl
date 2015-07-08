@@ -483,7 +483,7 @@ function BlendShapesModifier.setupRendering!(io GeometrySet geomSet){
       InlineShape shape = InlineMeshShape(name, mesh);
 
       // ThreadsafeMetaDataContainer metaData = getGeomMetaData(mesh);
-      // GenericMat44Value bindShapeTransform = metaData.get('globalTransform');
+      // Mat44Param bindShapeTransform = metaData.get('globalTransform');
       // StaticInlineTransform transform(name + "_Transform", this.handle.rootTransform, Xfo(bindShapeTransform.value));
       InlineInstance instance = SimpleInlineInstance(name + "_Instance", this.handle.rootTransform, shape, material);
     }
@@ -493,7 +493,7 @@ function BlendShapesModifier.setupRendering!(io GeometrySet geomSet){
 
 
 function JSONDictValue BlendShapesModifier.saveJSON(PersistenceContext persistenceContext){
-  JSONDictValue json = this.parent#saveJSON(persistenceContext);
+  JSONDictValue json = this.parent.saveJSON(persistenceContext);
   json.setString('filePath', this.filePath);
   json.setString('referenceGeometryName', this.referenceGeometryName);
   json.setBoolean('displayDebugging', this.displayDebugging);
@@ -507,7 +507,7 @@ function JSONDictValue BlendShapesModifier.saveJSON(PersistenceContext persisten
 }
 
 function BlendShapesModifier.loadJSON!(PersistenceContext persistenceContext, JSONDictValue json){
-  this.parent#loadJSON(persistenceContext, json);
+  this.parent.loadJSON(persistenceContext, json);
 
   if(json.has('threshold'))
     this.threshold = json.getScalar('threshold');

@@ -5,7 +5,7 @@
 require Alembic;
 require AlembicWrapper;
 require Characters;
-
+require Parameters;
 
 //////////////////////////////////////
 // Factory definition.
@@ -412,15 +412,15 @@ function AlembicSkinnedMeshGeometryGenerator.evaluate!(EvalContext context, io G
 
     Xfo globalXfo = this.computeGlobalXfo(archive, polymeshPaths[i]);
 
-    GenericMat44Value globalTransform(globalXfo.toMat44());
-    AutoLock AL(mesh.metaData.lock);
+    Mat44Param globalTransform('globalTransform', globalXfo.toMat44());
+    AutoLock AL(mesh.metaData.simpleLock);
     mesh.metaData.lockedSet('globalTransform', globalTransform);
 
     geomSet.add(mesh);
 
     //-----------------------------------------
     // Get the envelope weights data
-    AlembicICompoundProperty compound = readers[i]._schema.getArbGeomParams();
+    AlembicICompoundProperty compound = readers[i].getSchema().getArbGeomParams();
     if(!compound.valid())
       continue;
 
@@ -529,7 +529,7 @@ function AlembicSkinnedMeshGeometryGenerator.evaluate!(EvalContext context, io G
     UInt32 subArrayIndices[];
     UInt32 envelopeDeformerIndices[];
 
-    AlembicICompoundProperty compound = readers[skinnedGeometryIndices[i]]._schema.getArbGeomParams();
+    AlembicICompoundProperty compound = readers[skinnedGeometryIndices[i]].getSchema().getArbGeomParams();
     for (Integer pp=0; pp<compound.getNumProperties(); pp++) {
       AlembicPropertyHeader header = compound.getPropertyHeader(pp);
       AlembicPropertyType pType = header.getPropertyType();
@@ -842,7 +842,7 @@ function Skeleton AlembicSkinnedMeshGeometryGenerator.buildSkeleton(io AlembicAr
 
 /// Saves a json dict
 function JSONDictValue AlembicSkinnedMeshGeometryGenerator.saveJSON(PersistenceContext persistenceContext){
-  JSONDictValue json = this.parent#saveJSON(persistenceContext);
+  JSONDictValue json = this.parent.saveJSON(persistenceContext);
 
   json.setString('filePath', this.filePath);
 
@@ -861,7 +861,7 @@ function JSONDictValue AlembicSkinnedMeshGeometryGenerator.saveJSON(PersistenceC
 
 /// Loads a json dict
 function AlembicSkinnedMeshGeometryGenerator.loadJSON!(PersistenceContext persistenceContext, JSONDictValue json){
-  this.parent#loadJSON(persistenceContext, json);
+  this.parent.loadJSON(persistenceContext, json);
 
   JSONArrayValue geometryNamesData = json.get('geometryNames');
   if(geometryNamesData)

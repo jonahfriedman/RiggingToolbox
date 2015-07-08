@@ -295,7 +295,7 @@ function GeometryStack.loadJSONFile!(PersistenceContext persistenceContext, Stri
   this.filePath = filePath;
   String expandedPathStr = expandedPath.string();
 
-  PersistenceContext subpersistenceContext;
+  PersistenceContext subpersistenceContext();
   expandedPath.removeFileName();
   subpersistenceContext.filePath = expandedPath.string();
   TextReader reader(expandedPathStr);
@@ -304,7 +304,7 @@ function GeometryStack.loadJSONFile!(PersistenceContext persistenceContext, Stri
 
 
 function GeometryStack.loadJSONFile!(String filePath){
-  PersistenceContext persistenceContext;
+  PersistenceContext persistenceContext();
   this.loadJSONFile( persistenceContext, filePath);
 }
 

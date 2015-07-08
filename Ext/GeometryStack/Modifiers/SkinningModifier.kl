@@ -261,9 +261,9 @@ function SkinningModifier.evaluate!(EvalContext context, io GeometrySet geomSet)
         return;
       }
       ThreadsafeMetaDataContainer metaData = getGeomMetaData(geometry);
-      GenericMat44Value globalTransform = metaData.get('globalTransform');
+      Mat44Param globalTransform = metaData.get('globalTransform');
       if(globalTransform){
-        this.bindShapeTransforms[i] = globalTransform.value;
+        this.bindShapeTransforms[i] = globalTransform.getValue();
       }
 
       // Update the vertex colors if the data version has changed
@@ -380,7 +380,7 @@ function SkinningModifier.setupRendering!(io GeometrySet geomSet){
       InlineShape shape = InlineMeshShape(name, mesh);
 
       // ThreadsafeMetaDataContainer metaData = getGeomMetaData(mesh);
-      // GenericMat44Value bindShapeTransform = metaData.get('globalTransform');
+      // Mat44Param bindShapeTransform = metaData.get('globalTransform');
       // StaticInlineTransform transform(name + "_Transform", this.handle.rootTransform, Xfo(bindShapeTransform.value));
       InlineInstance instance = SimpleInlineInstance(name + "_Instance", this.handle.rootTransform, shape, material);
     }
@@ -392,14 +392,14 @@ function SkinningModifier.setupRendering!(io GeometrySet geomSet){
 
 
 function JSONDictValue SkinningModifier.saveJSON(PersistenceContext persistenceContext){
-  JSONDictValue json = this.parent#saveJSON(persistenceContext);
+  JSONDictValue json = this.parent.saveJSON(persistenceContext);
   json.setBoolean('transformNormals', this.transformNormals);
   json.setBoolean('displayDebugging', this.displayDebugging);
   return json;
 }
 
 function SkinningModifier.loadJSON!(PersistenceContext persistenceContext, JSONDictValue json){
-  this.parent#loadJSON(persistenceContext, json);
+  this.parent.loadJSON(persistenceContext, json);
   if(json.has('transformNormals'))
     this.transformNormals = json.getBoolean('transformNormals');
   if(json.has('displayDebugging'))
