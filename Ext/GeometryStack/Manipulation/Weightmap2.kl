@@ -75,7 +75,6 @@ The Weightmap2 is a helper object to facilitate the binding of weightmaps to geo
 require InlineDrawing;
 require FileIO;
 require JSON;
-require SpliceInterfaces;
 
 object Weightmap2 : Persistable, Detachable {
   /// The name of the weightmap, which is used as the name of the geometry attribute on the polygon mesh.
