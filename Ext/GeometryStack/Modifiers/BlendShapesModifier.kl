@@ -28,7 +28,7 @@ struct BlendShapesModifier_Target {
 };
 
 function UInt32 BlendShapesModifier_Target.size(){
-  return this.indices.size;
+  return this.indices.size();
 }
 
 function BlendShapesModifier_Target.resize!(UInt32 size){
@@ -141,7 +141,7 @@ function BlendShapesModifier.loadTargetsFromAlembic!(FilePath expandedPath){
     }
   }
   UInt32 targetCount;
-  for(UInt32 i=0; i<this.targets.size; i++){
+  for(UInt32 i=0; i<this.targets.size(); i++){
     if(i==0)
       targetCount = this.targets[i].size();
     if(this.targets[i].size() == 0){
@@ -312,8 +312,8 @@ function BlendShapesModifier.addTargetGeometry!(UInt32 geomIndex, Geometry targe
 
     referencePointCount = targetMesh.pointCount();
   }
-  UInt32 targetPointCount = this.targets[geomIndex][targetIndex].indices.size;
-  report("addTargetGeometry:" + geomIndex +":" + this.targets[geomIndex].size + ":" + Scalar(targetPointCount)/Scalar(referencePointCount));
+  UInt32 targetPointCount = this.targets[geomIndex][targetIndex].indices.size();
+  report("addTargetGeometry:" + geomIndex +":" + this.targets[geomIndex].size() + ":" + Scalar(targetPointCount)/Scalar(referencePointCount));
   this.sparcity += Scalar(targetPointCount)/Scalar(referencePointCount);
   this.targetCount ++;
 }
@@ -381,8 +381,8 @@ operator blendShapesModifier_deformGeometries<<<index>>>(
   io UInt32 numActiveShapes
 ){
   AutoProfilingEvent p(FUNC);
-  if(targets[index].size != weights.size()){
-    report("BlendShapesModifier cannot evaluate because the number of weights:" + weights.size() + " does not match the number of targets:" + targets[index].size);
+  if(targets[index].size() != weights.size()){
+    report("BlendShapesModifier cannot evaluate because the number of weights:" + weights.size() + " does not match the number of targets:" + targets[index].size());
     return;
   }
   Geometry geom = geomSet.get(index);
@@ -400,7 +400,7 @@ operator blendShapesModifier_deformGeometries<<<index>>>(
     vertexColorsAttr.values = newColors;
   }
 
-  for(UInt32 i=0; i<targets[index].size; i++){
+  for(UInt32 i=0; i<targets[index].size(); i++){
     if(weights[i] > shapeThreshold){
       //AutoProfilingEvent p_targ("Target:" + i);
       if(!mesh){
@@ -434,8 +434,8 @@ operator blendShapesModifier_deformGeometries<<<index>>>(
 
 function BlendShapesModifier.evaluate!(EvalContext context, io GeometrySet geomSet){
   AutoProfilingEvent p(FUNC);
-  if(this.targets.size != geomSet.size()){
-    setError("BlendShapesModifier cannot evaluate because the number of geoms:" + geomSet.size() + " does not match the number of targets:" + this.targets.size);
+  if(this.targets.size() != geomSet.size()){
+    setError("BlendShapesModifier cannot evaluate because the number of geoms:" + geomSet.size() + " does not match the number of targets:" + this.targets.size());
     return;
   }
 
@@ -476,7 +476,7 @@ function BlendShapesModifier.setupRendering!(io GeometrySet geomSet){
   // Now setup the rendering
   InlineShader shader = this.handle.getDrawing().registerShader(OGLVertexColorOverlayShader2('BlendShapesModifierShader', 'blendShapes_vertexColors'));
   InlineMaterial material = shader.getOrCreateMaterial("BlendShapesModifierMaterial");
-  for(Integer geomId=0; geomId<geomSet.size; geomId++){
+  for(Integer geomId=0; geomId<geomSet.size(); geomId++){
     PolygonMesh mesh = geomSet.get(geomId);
     if(mesh){
       String name = "BlendShapesModifier_" + String(geomId);
@@ -499,7 +499,7 @@ function JSONDictValue BlendShapesModifier.saveJSON(PersistenceContext persisten
   json.setBoolean('displayDebugging', this.displayDebugging);
 
   JSONArrayValue targetGeometryNamesData();
-  for(Integer i=0; i<this.targetGeometryNames.size; i++)
+  for(Integer i=0; i<this.targetGeometryNames.size(); i++)
     targetGeometryNamesData.addString(this.targetGeometryNames[i]);
   json.set('targetGeometryNames', targetGeometryNamesData);
 
@@ -556,9 +556,9 @@ function BlendShapesModifier.loadJSON!(PersistenceContext persistenceContext, JS
     }
 
 
-    if(this.targets.size > 0){
-      this.targetColors.resize(this.targets[0].size);
-      for (Integer i = 0; i < this.targets[0].size; i++){
+    if(this.targets.size() > 0){
+      this.targetColors.resize(this.targets[0].size());
+      for (Integer i = 0; i < this.targets[0].size(); i++){
         this.targetColors[i] = randomColor(6754, i, 0.25);
       }
     }
@@ -568,11 +568,11 @@ function BlendShapesModifier.loadJSON!(PersistenceContext persistenceContext, JS
 function BlendShapesModifier.saveTargetsToBinCache(FilePath binCachefile) {
   report("saveTargetsToBinCache:" + binCachefile.string());
   BinaryBlockWriter blockWriter(binCachefile.string());
-  blockWriter.setNumBlocks(this.targets.size);
+  blockWriter.setNumBlocks(this.targets.size());
 
-  for(UInt32 i=0; i<this.targets.size; i++){
-    BinaryBlockWriter targetSetWriter = blockWriter.beginWriteBlock('targetSet'+i, this.targets[i].size);
-    for(UInt32 j=0; j<this.targets[i].size; j++){
+  for(UInt32 i=0; i<this.targets.size(); i++){
+    BinaryBlockWriter targetSetWriter = blockWriter.beginWriteBlock('targetSet'+i, this.targets[i].size());
+    for(UInt32 j=0; j<this.targets[i].size(); j++){
       BinaryBlockWriter targetWriter = targetSetWriter.beginWriteBlock('target'+j);
       UInt32 count = this.targets[i][j].size();
       targetWriter.write(count.data, count.dataSize);
@@ -587,11 +587,11 @@ function BlendShapesModifier.loadTargetsFromBinCache!(FilePath binCachefile) {
   BinaryBlockReader blockReader(binCachefile.string());
   UInt64 numBlocks = blockReader.getNumBlocks();
   this.targets.resize(UInt32(numBlocks));
-  for(UInt32 i=0; i<this.targets.size; i++){
+  for(UInt32 i=0; i<this.targets.size(); i++){
     BinaryBlockReader targetSetReader = blockReader.beginReadBlock('targetSet'+i);
     UInt64 numTargets = targetSetReader.getNumBlocks();
     this.targets[i].resize(UInt32(numTargets));
-    for(UInt32 j=0; j<this.targets[i].size; j++){
+    for(UInt32 j=0; j<this.targets[i].size(); j++){
       BinaryBlockReader targetReader = targetSetReader.beginReadBlock('target'+j);
       UInt32 count = 0;
       targetReader.read(count.data, count.dataSize);
@@ -609,9 +609,9 @@ function String BlendShapesModifier.getDesc(String indent) {
   desc += indent + "{\n";
   desc += indent + "  type: "+ this.type() + ",\n";
   desc += indent + "  filePath: "+ this.filePath + "\n";
-  desc += indent + "  refGeoms: "+ this.targets.size + "\n";
-  for(Integer i=0; i<this.targets.size; i++)
-    desc += indent + "    blendTargets: "+ + i +":" + this.targets[i].size + "\n";
+  desc += indent + "  refGeoms: "+ this.targets.size() + "\n";
+  for(Integer i=0; i<this.targets.size(); i++)
+    desc += indent + "    blendTargets: "+ + i +":" + this.targets[i].size() + "\n";
   desc += indent + "}";
   return desc;
 }

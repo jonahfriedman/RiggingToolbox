@@ -145,12 +145,12 @@ function JSONDictValue Weightmap2.saveJSON(PersistenceContext persistenceContext
     // The binary file will live in the same folder as the dcc scene file. 
     FilePath binCacheFilePath = sceneFilePath.removeFileName() / FilePath(fileName);
     BinaryBlockWriter blockWriter(binCacheFilePath.string());
-    blockWriter.setNumBlocks(1+this.weightMapAttrs.size);
+    blockWriter.setNumBlocks(1+this.weightMapAttrs.size());
     BinaryBlockWriter headerWriter = blockWriter.beginWriteBlock('header');
     UInt32 numWeightmaps = this.weightMapAttrs.size();
     headerWriter.write(numWeightmaps.data, numWeightmaps.dataSize);
 
-    for(Integer i=0; i<this.weightMapAttrs.size; i++){
+    for(Integer i=0; i<this.weightMapAttrs.size(); i++){
       BinaryBlockWriter bodyWriter = blockWriter.beginWriteBlock('weightMap'+i);
       UInt32 numElements = this.weightMapAttrs[i].size();
       bodyWriter.write(numElements.data, numElements.dataSize);
@@ -162,10 +162,10 @@ function JSONDictValue Weightmap2.saveJSON(PersistenceContext persistenceContext
   else{
     // Save all the data directly into the JSON string.
     JSONArrayValue weightMapsData();
-    for(Integer i=0; i<this.weightMapAttrs.size; i++){
+    for(Integer i=0; i<this.weightMapAttrs.size(); i++){
       JSONArrayValue weightMapData();
       weightMapData.values.resize(this.weightMapAttrs[i].size());
-      for(Integer j=0; j<this.weightMapAttrs.size; j++)
+      for(Integer j=0; j<this.weightMapAttrs.size(); j++)
         weightMapData.values[j] = JSONNumberValue(this.weightMapAttrs[i].values[j]);
       weightMapsData.add(weightMapData);
     }
@@ -210,13 +210,13 @@ function Weightmap2.loadJSON!(PersistenceContext persistenceContext, JSONDictVal
   else{
     if(json.has("weightMapsData")){
       JSONArrayValue weightMapsData = json.get("weightMapsData");
-      this.weightMapAttrs.resize(weightMapsData.size);
-      for(Integer i=0; i<weightMapsData.size; i++){
+      this.weightMapAttrs.resize(weightMapsData.size());
+      for(Integer i=0; i<weightMapsData.size(); i++){
         JSONArrayValue weightMapData = weightMapsData.get(i);
         this.weightMapAttrs[i] = ScalarAttribute();
         this.weightMapAttrs[i].name = this.name;
         this.weightMapAttrs[i].resize(weightMapData.size());
-        for(Integer j=0; j<this.weightMapAttrs.size; j++)
+        for(Integer j=0; j<this.weightMapAttrs.size(); j++)
           this.weightMapAttrs[i].values[j] = weightMapData.getScalar(j);
       }
     }
@@ -258,7 +258,7 @@ function Boolean Weightmap2.isConnected(){
 /// \param index The index of the mesh in the weightmap. 
 function Weightmap2.connect!( PolygonMesh mesh, Xfo meshTransform, UInt32 index){
   report(this.name + ".connect:"+index);
-  if(this.weightMapAttrs.size <= index){
+  if(this.weightMapAttrs.size() <= index){
     UInt32 newNumMeshes = index + 1;
     this.meshes.resize(newNumMeshes);
     this.meshTransforms.resize(newNumMeshes);
@@ -301,8 +301,8 @@ function Weightmap2.display!(Boolean state){
       this.overlayMaterial = overlayShader.getOrCreateMaterial("weightMap");
       this.overlayMaterial.setUniform('u_color', this.color);
 
-      this.instances.resize(this.meshes.size);
-      for(Integer i=0; i<this.instances.size; i++){
+      this.instances.resize(this.meshes.size());
+      for(Integer i=0; i<this.instances.size(); i++){
         // create a shape for the mesh
         InlineMeshShape shape = InlineMeshShape(this.name+'Shape', this.meshes[i]);
         InlineTransform transform = StaticInlineTransform(this.name+'Transform', this.handle.getRootTransform(), this.meshTransforms[i]);
@@ -312,7 +312,7 @@ function Weightmap2.display!(Boolean state){
       }
     }
     else {
-      for(Integer i=0; i<this.instances.size; i++){
+      for(Integer i=0; i<this.instances.size(); i++){
         if(this.instances[i] != null && !this.instances[i].hasMaterial(this.overlayMaterial)){
           this.instances[i].addMaterial(this.overlayMaterial); 
         }
@@ -321,7 +321,7 @@ function Weightmap2.display!(Boolean state){
     }
   }
   else {
-    for(Integer i=0; i<this.instances.size; i++){
+    for(Integer i=0; i<this.instances.size(); i++){
       if(this.instances[i] != null && this.instances[i].hasMaterial(this.overlayMaterial)){
         this.instances[i].removeMaterial(this.overlayMaterial); 
       }
@@ -331,16 +331,16 @@ function Weightmap2.display!(Boolean state){
 
 /// Activate the Weightmap2 manipulator 
 function Weightmap2.activateManipulator!(){
-  if(this.instances.size == 0)
+  if(this.instances.size() == 0)
     this.display(true);
-  if(this.instances.size == 0){
+  if(this.instances.size() == 0){
     setError("Cannnot activate the Weightmap2 without a geometry assigned");
   }
   Ref<EventDispatcher> eventDispatcher = EventDispatcher_GetInstance();
   if(!eventDispatcher.hasManipulator(this.name+'PaintManipulator')){
     eventDispatcher.registerManipulator(this.name+'PaintManipulator', this.paintManipulator);
   }
-  for(Integer i=0; i<this.instances.size; i++){
+  for(Integer i=0; i<this.instances.size(); i++){
     if(!this.paintManipulator.hasTargetGeometry(this.instances[i]))
       this.paintManipulator.addTargetGeometry(this.instances[i]);
   }
@@ -353,7 +353,7 @@ function Weightmap2.activateManipulator!(){
 
 /// Deactivate the Weightmap2 manipulator 
 function Weightmap2.deactivateManipulator!(){
-  if(this.instances.size == 0)
+  if(this.instances.size() == 0)
     return;
   Ref<EventDispatcher> eventDispatcher = EventDispatcher_GetInstance();
   if(this.paintManipulator != null && eventDispatcher.activeManipulator() == this.name+'PaintManipulator'){
