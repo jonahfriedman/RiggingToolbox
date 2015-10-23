@@ -65,7 +65,7 @@ inline BezierXfo.setKnots!(Xfo knots[]) {
 
 // Sets a single kont value in the curve.
 inline BezierXfo.setKnot!(UInt32 index, Xfo knot) {
-  if(this.knots.size <= index)
+  if(this.knots.size() <= index)
     this.knots.resize(index+1);
   this.knots[index] = knot;
 }

@@ -60,13 +60,13 @@ function UInt32[String] SkinningModifier.getAttributeInteractions(){
 }
 
 function SkinningModifier.setReferencePose!(Mat44 referencePose[]){
-  this.invReferencePose.resize(referencePose.size);
-  this.deformerColors.resize(referencePose.size);
-  for (Integer i = 0; i < referencePose.size; i++){
+  this.invReferencePose.resize(referencePose.size());
+  this.deformerColors.resize(referencePose.size());
+  for (Integer i = 0; i < referencePose.size(); i++){
     this.invReferencePose[i] = referencePose[i].inverse();
     this.deformerColors[i] = randomColor(87655, i, 0.15);
   }
-  this.skinningMatrices.resize(referencePose.size);
+  this.skinningMatrices.resize(referencePose.size());
   this.pose = referencePose;
 }
 
@@ -74,8 +74,8 @@ function SkinningModifier.setSkeleton!(Skeleton skeleton){
   this.skeleton = skeleton;
   Size deformerIndices[] = skeleton.getDeformerIndices();
   Mat44 referencePose[];
-  referencePose.resize(deformerIndices.size);
-  for (Integer i = 0; i < deformerIndices.size; i++){
+  referencePose.resize(deformerIndices.size());
+  for (Integer i = 0; i < deformerIndices.size(); i++){
     referencePose[i] = skeleton.getBone(deformerIndices[i]).referencePose.toMat44();
   }
   this.setReferencePose(referencePose);
@@ -252,8 +252,8 @@ function SkinningModifier.evaluate!(EvalContext context, io GeometrySet geomSet)
         throw("No skeleton found in geometry set");
     }
 
-    this.bindShapeTransforms.resize(geomSet.size);
-    for(Integer i=0; i<geomSet.size; i++){
+    this.bindShapeTransforms.resize(geomSet.size());
+    for(Integer i=0; i<geomSet.size(); i++){
       Geometry geometry = geomSet.get(i);
       Ref<GeometryAttributes> attributes = geometry.getAttributes();
       if(!attributes.has("skinningData")){
@@ -276,11 +276,11 @@ function SkinningModifier.evaluate!(EvalContext context, io GeometrySet geomSet)
   }
 
   if(this.poseDirty){
-    if(this.pose.size != this.invReferencePose.size){
-      report('Warning: Pose count does not match the reference pose count. referencePose:' + this.invReferencePose.size + " != pose:" + this.pose.size + ". Skinning disabled");
+    if(this.pose.size() != this.invReferencePose.size()){
+      report('Warning: Pose count does not match the reference pose count. referencePose:' + this.invReferencePose.size() + " != pose:" + this.pose.size() + ". Skinning disabled");
       return;
     }
-    for (Integer i = 0; i < this.pose.size; i++) {
+    for (Integer i = 0; i < this.pose.size(); i++) {
       this.skinningMatrices[i] = this.pose[i] * this.invReferencePose[i];
     }
     this.poseDirty = false;
@@ -310,7 +310,7 @@ function SkinningModifier.evaluate!(EvalContext context, io GeometrySet geomSet)
       this.setupRendering(geomSet);
 
     Pose pose(this.skeleton);
-    for (Integer i = 0; i < this.pose.size; i++) {
+    for (Integer i = 0; i < this.pose.size(); i++) {
       pose.setBoneXfo(i, this.pose[i]);
     }
     ISkeleton iskeleton = this.skeleton;
@@ -369,7 +369,7 @@ function SkinningModifier.setupRendering!(io GeometrySet geomSet){
   InlineShader shader = this.handle.getDrawing().registerShader(OGLVertexColorOverlayShader2('SkinningModifierShader', 'skinning_vertexColors'));
   InlineMaterial material = shader.getOrCreateMaterial("SkinningModifierMaterial");
 
-  for(Integer geomId=0; geomId<geomSet.size; geomId++){
+  for(Integer geomId=0; geomId<geomSet.size(); geomId++){
     PolygonMesh mesh = geomSet.get(geomId);
     if(mesh){
       if(!mesh.has("vertexColors")){

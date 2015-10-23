@@ -241,7 +241,7 @@ function Boolean applyNameFilter(String name, String filter){
 
 
 function Boolean applyNameFilters(String name, String filters[]){
-  for(Integer i=0; i<filters.size; i++){
+  for(Integer i=0; i<filters.size(); i++){
     if(applyNameFilter(name, filters[i])){
       return true;
     }

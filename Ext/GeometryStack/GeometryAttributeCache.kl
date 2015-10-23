@@ -43,8 +43,8 @@ function GeometryAttributeCache.update!(io GeometrySet geomSet, GeometryOperator
   AutoProfilingEvent p(FUNC+":"+this.attributesNames);
 
 
-  UInt32 numGeoms = geomSet.size;
-  UInt32 numcachedAttrs = this.attributesNames.size;
+  UInt32 numGeoms = geomSet.size();
+  UInt32 numcachedAttrs = this.attributesNames.size();
   this.cachedAttributes.resize(numGeoms);
   this.attributeGenerations.resize(numGeoms);
 
