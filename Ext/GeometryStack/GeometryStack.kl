@@ -119,6 +119,10 @@ function GeometryStack.notify!(Notifier notifier, String type, String data) {
 function GeometrySet GeometryStack.evaluate!(EvalContext context) {
   AutoProfilingEvent p(FUNC);
 
+  // Report meaningful error if context is null
+  if (context == null)
+    throw("Context is null. Ensure an initialized EvalContext is passed.");
+
   // this.dirtyPoint = 0;// force evaluation all the time.(disable caching)
   if(this.dirtyPoint < this.geomOperators.size()){
     for(Integer i=this.dirtyPoint; i<this.geomOperators.size(); i++){
@@ -151,8 +155,12 @@ function GeometrySet GeometryStack.evaluate!(EvalContext context) {
         Generator generator = op;
         if(generator)
           cachePoint = GeometryCache();
-        else
-          cachePoint = GeometryAttributeCache(op);
+        else // modifier
+        {
+          // #8 Bugfix: Explicit type cast for interfaces in KL, otherwise GeometryAttributeCache returns null
+          BaseModifier mod = op; 
+          cachePoint = GeometryAttributeCache(mod);
+        }
         this.cachePoints[i] = cachePoint;
       }
 
