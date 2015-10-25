@@ -166,7 +166,14 @@ function AlembicGeometryGenerator.evaluate!(EvalContext context, io GeometrySet 
 
     // Compute the global transform for this sample and save it as meta data. 
 
-    Xfo globalXfo = this.computeGlobalXfo(this.time, archive, polymeshPaths[i]);
+    // TODO: This is a temporary hack because FE 2.0 was giving errors that it was reading Xfo
+    //       from PolyMesh instead of Xfo. Not sure if this is the correct 'fix'
+    // Get the transform from the PolygonMesh (parent transform)
+    String hierarchy[] = polymeshPaths[i].split("/");
+    hierarchy.pop(); // Remove the shape item
+    String transform = "/".join(hierarchy);
+
+    Xfo globalXfo = this.computeGlobalXfo(this.time, archive, transform);
     Mat44Param globalTransform('globalTransform', globalXfo.toMat44());
     AutoLock AL(mesh.metaData.simpleLock);
     mesh.metaData.lockedSet('globalTransform', globalTransform);

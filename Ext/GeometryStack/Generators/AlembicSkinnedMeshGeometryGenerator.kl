@@ -409,8 +409,14 @@ function AlembicSkinnedMeshGeometryGenerator.evaluate!(EvalContext context, io G
     mesh.debugName = name; // Set the debug name so we can easily track this geom in future. 
     readers[i].readSample(0.0, mesh);
 
+    // TODO: This is a temporary hack because FE 2.0 was giving errors that it was reading Xfo
+    //       from PolyMesh instead of Xfo. Not sure if this is the correct 'fix'
+    // Get the transform from the PolygonMesh (parent transform)
+    String hierarchy[] = polymeshPaths[i].split("/");
+    hierarchy.pop(); // Remove the shape item
+    String transform = "/".join(hierarchy);
 
-    Xfo globalXfo = this.computeGlobalXfo(archive, polymeshPaths[i]);
+    Xfo globalXfo = this.computeGlobalXfo(archive, transform);
 
     Mat44Param globalTransform('globalTransform', globalXfo.toMat44());
     AutoLock AL(mesh.metaData.simpleLock);
