@@ -148,14 +148,14 @@ function JSONDictValue Weightmap2.saveJSON(PersistenceContext persistenceContext
     blockWriter.setNumBlocks(1+this.weightMapAttrs.size());
     BinaryBlockWriter headerWriter = blockWriter.beginWriteBlock('header');
     UInt32 numWeightmaps = this.weightMapAttrs.size();
-    headerWriter.write(numWeightmaps.data, numWeightmaps.dataSize);
+    headerWriter.write(numWeightmaps.data(), numWeightmaps.dataSize());
 
     for(Integer i=0; i<this.weightMapAttrs.size(); i++){
       BinaryBlockWriter bodyWriter = blockWriter.beginWriteBlock('weightMap'+i);
       UInt32 numElements = this.weightMapAttrs[i].size();
-      bodyWriter.write(numElements.data, numElements.dataSize);
+      bodyWriter.write(numElements.data(), numElements.dataSize());
       Scalar data[] = this.weightMapAttrs[i].values;
-      bodyWriter.write(data.data, data.dataSize);
+      bodyWriter.write(data.data(), data.dataSize());
     }
     root.setString("fileName", fileName);
   }
@@ -187,18 +187,18 @@ function Weightmap2.loadJSON!(PersistenceContext persistenceContext, JSONDictVal
       // Now read the data back in in an arbitrary order. 
       BinaryBlockReader headerReader = blockReader.beginReadBlock('header');
       UInt32 numWeightmaps = 0;
-      headerReader.read(numWeightmaps.data, numWeightmaps.dataSize);
+      headerReader.read(numWeightmaps.data(), numWeightmaps.dataSize());
       this.weightMapAttrs.resize(numWeightmaps);
 
       for(Integer i=0; i<numWeightmaps; i++){
         BinaryBlockReader bodyReader = blockReader.beginReadBlock('weightMap'+i);
         if(bodyReader){
           UInt32 numElements = 0;
-          bodyReader.read(numElements.data, numElements.dataSize);
+          bodyReader.read(numElements.data(), numElements.dataSize());
           this.weightMapAttrs[i] = ScalarAttribute();
           this.weightMapAttrs[i].name = this.name;
           this.weightMapAttrs[i].resize(numElements);
-          bodyReader.read(this.weightMapAttrs[i].values.data, this.weightMapAttrs[i].values.dataSize);
+          bodyReader.read(this.weightMapAttrs[i].values.data(), this.weightMapAttrs[i].values.dataSize());
         }
       }
       this.loaded = true;

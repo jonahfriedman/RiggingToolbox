@@ -575,9 +575,9 @@ function BlendShapesModifier.saveTargetsToBinCache(FilePath binCachefile) {
     for(UInt32 j=0; j<this.targets[i].size(); j++){
       BinaryBlockWriter targetWriter = targetSetWriter.beginWriteBlock('target'+j);
       UInt32 count = this.targets[i][j].size();
-      targetWriter.write(count.data, count.dataSize);
-      targetWriter.write(this.targets[i][j].indices.data, this.targets[i][j].indices.dataSize);
-      targetWriter.write(this.targets[i][j].deltas.data, this.targets[i][j].deltas.dataSize);
+      targetWriter.write(count.data(), count.dataSize());
+      targetWriter.write(this.targets[i][j].indices.data(), this.targets[i][j].indices.dataSize());
+      targetWriter.write(this.targets[i][j].deltas.data(), this.targets[i][j].deltas.dataSize());
     }
   }
 }
@@ -594,10 +594,10 @@ function BlendShapesModifier.loadTargetsFromBinCache!(FilePath binCachefile) {
     for(UInt32 j=0; j<this.targets[i].size(); j++){
       BinaryBlockReader targetReader = targetSetReader.beginReadBlock('target'+j);
       UInt32 count = 0;
-      targetReader.read(count.data, count.dataSize);
+      targetReader.read(count.data(), count.dataSize());
       this.targets[i][j].resize(count);
-      targetReader.read(this.targets[i][j].indices.data, this.targets[i][j].indices.dataSize);
-      targetReader.read(this.targets[i][j].deltas.data, this.targets[i][j].deltas.dataSize);
+      targetReader.read(this.targets[i][j].indices.data(), this.targets[i][j].indices.dataSize());
+      targetReader.read(this.targets[i][j].deltas.data(), this.targets[i][j].deltas.dataSize());
     }
   }
 }
