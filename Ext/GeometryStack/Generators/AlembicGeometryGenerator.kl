@@ -104,14 +104,8 @@ inline String AlembicGeometryGenerator.getNameFromPath(String pathStr) {
 /// \internal
 function String AlembicGeometryGenerator.getParentPath(String pathStr) {
   String path[] = pathStr.split('/');
-  String parentPath;
-  for(Integer j=0; j<path.size()-1; j++){
-    if(j==0)
-      parentPath = path[j];
-    else
-      parentPath = parentPath + "/" + path[j];
-  }
-  return parentPath;
+  path.pop();
+  return "/".join(path);
 }
 
 /// computes the global transform of an item in the alembic hierarchy./
@@ -164,15 +158,10 @@ function AlembicGeometryGenerator.evaluate!(EvalContext context, io GeometrySet 
     mesh.debugName = name; // Set the debug name so we can easily track this geom in future. 
     readers[i].readSample(this.time, mesh);
 
-    // Compute the global transform for this sample and save it as meta data. 
-
-    // TODO: This is a temporary hack because FE 2.0 was giving errors that it was reading Xfo
-    //       from PolyMesh instead of Xfo. Not sure if this is the correct 'fix'
     // Get the transform from the PolygonMesh (parent transform)
-    String hierarchy[] = polymeshPaths[i].split("/");
-    hierarchy.pop(); // Remove the shape item
-    String transform = "/".join(hierarchy);
+    String transform = this.getParentPath(polymeshPaths[i]);
 
+    // Compute the global transform for this sample and save it as meta data. 
     Xfo globalXfo = this.computeGlobalXfo(this.time, archive, transform);
     Mat44Param globalTransform('globalTransform', globalXfo.toMat44());
     AutoLock AL(mesh.metaData.simpleLock);
