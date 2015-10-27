@@ -83,7 +83,7 @@ function String GeometrySet.getDesc(String indent, Boolean includeGeometryTolopo
   String desc;
   desc += indent + "{ \n";
   desc += indent + "  geometries:[ \n";
-  for(Integer i=0; i<this.size; i++){
+  for(Integer i=0; i<this.size(); i++){
     desc += indent + "    " + getGeomDebugName(this.get(i)) + ":{\n";
     
     if(includeGeometryTolopology){

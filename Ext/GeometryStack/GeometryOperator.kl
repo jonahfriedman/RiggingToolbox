@@ -11,14 +11,14 @@ const UInt32 AttrMode_ReadWrite = 2;
 
 
 /**
-  A GeometryOperator is can generate or modify geomety in the geometry stack.
-  The GeometryStack manages a sequence of these operators, evalauting and caching thier results during scene playback. 
+  A GeometryOperator can generate or modify geomety in the geometry stack.
+  The GeometryStack manages a sequence of these operators, evaluating and caching thier results during scene playback. 
 
   \seealso GeometryOperator, RiggingToolboxRegistry, GeometryStack
 */
 interface GeometryOperator {
   
-  // returns the list of attributes that the geomery operator is interacting with in some way. 
+  // Returns the list of attributes that the geomery operator is interacting with in some way. 
   // Generators will usually write a collection of attributes, while Modifiers will read and write 
   // attributes. This dictionary is used to determine where caching should occur in the geometry stack.
   UInt32[String] getAttributeInteractions();

@@ -96,7 +96,7 @@ inline String AlembicGeometryGenerator.getFilePath(){
 /// \internal
 inline String AlembicGeometryGenerator.getNameFromPath(String pathStr) {
   String path[] = pathStr.split('/');
-  return path[path.size-1];
+  return path[path.size()-1];
 }
 
 
@@ -104,14 +104,8 @@ inline String AlembicGeometryGenerator.getNameFromPath(String pathStr) {
 /// \internal
 function String AlembicGeometryGenerator.getParentPath(String pathStr) {
   String path[] = pathStr.split('/');
-  String parentPath;
-  for(Integer j=0; j<path.size-1; j++){
-    if(j==0)
-      parentPath = path[j];
-    else
-      parentPath = parentPath + "/" + path[j];
-  }
-  return parentPath;
+  path.pop();
+  return "/".join(path);
 }
 
 /// computes the global transform of an item in the alembic hierarchy./
@@ -155,7 +149,7 @@ function AlembicGeometryGenerator.evaluate!(EvalContext context, io GeometrySet 
     String name = this.getNameFromPath(polymeshPaths[i]);
     
     // Only include the geomety if it matches the name filters. (or there are no name filters)
-    if(this.geometryNames.size != 0 && !applyNameFilters(name, this.geometryNames))
+    if(this.geometryNames.size() != 0 && !applyNameFilters(name, this.geometryNames))
       continue;
 
     readers[i] = archive.getPolyMesh(polymeshPaths[i]);
@@ -164,9 +158,11 @@ function AlembicGeometryGenerator.evaluate!(EvalContext context, io GeometrySet 
     mesh.debugName = name; // Set the debug name so we can easily track this geom in future. 
     readers[i].readSample(this.time, mesh);
 
-    // Compute the global transform for this sample and save it as meta data. 
+    // Get the transform from the PolygonMesh (parent transform)
+    String transform = this.getParentPath(polymeshPaths[i]);
 
-    Xfo globalXfo = this.computeGlobalXfo(this.time, archive, polymeshPaths[i]);
+    // Compute the global transform for this sample and save it as meta data. 
+    Xfo globalXfo = this.computeGlobalXfo(this.time, archive, transform);
     Mat44Param globalTransform('globalTransform', globalXfo.toMat44());
     AutoLock AL(mesh.metaData.simpleLock);
     mesh.metaData.lockedSet('globalTransform', globalTransform);
@@ -192,7 +188,7 @@ function JSONDictValue AlembicGeometryGenerator.saveJSON(PersistenceContext pers
   json.setString('filePath', this.filePath);
 
   JSONArrayValue geometryNamesData();
-  for(Integer i=0; i<this.geometryNames.size; i++)
+  for(Integer i=0; i<this.geometryNames.size(); i++)
     geometryNamesData.addString(this.geometryNames[i]);
   json.set('geometryNames', geometryNamesData);
 

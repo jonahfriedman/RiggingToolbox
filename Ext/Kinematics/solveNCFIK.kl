@@ -46,7 +46,7 @@ function Xfo[] solveNCFIK(
     boneLengths[i] = boneVectors[i].length();
     remainingChainLength += abs(boneLengths[i] /* basePose[i].sc.x*/);
   }
-  Integer lastBoneIndex = basePose.size-1;
+  Integer lastBoneIndex = basePose.size()-1;
   Vec3 fkChainTip = basePose[lastBoneIndex].tr;
   Vec3 chainRootPos = basePose[0].tr;
 

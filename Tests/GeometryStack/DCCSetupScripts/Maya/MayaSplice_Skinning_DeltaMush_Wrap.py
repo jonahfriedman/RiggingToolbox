@@ -108,7 +108,7 @@ cmds.connectAttr(influencePoseNode + '.stack', influenceMushNode + '.stack')
 
 influenceEvalNode = cmds.createNode("spliceMayaNode", name = "tubeCharacter_Eval")
 
-cmds.fabricSplice('addInputPort', influenceEvalNode, json.dumps({'portName':'stack', 'dataType':'GeometryStack', 'extension':'RiggingToolbox', 'addSpliceMayaAttr':True, 'autoInitObjects': False}))
+cmds.fabricSplice('addIOPort', influenceEvalNode, json.dumps({'portName':'stack', 'dataType':'GeometryStack', 'extension':'RiggingToolbox', 'addSpliceMayaAttr':True, 'autoInitObjects': False}))
 cmds.fabricSplice('addOutputPort', influenceEvalNode, json.dumps({'portName':'eval', 'dataType':'Scalar', 'addMayaAttr': True}))
 
 
