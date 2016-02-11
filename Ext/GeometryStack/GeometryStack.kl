@@ -66,7 +66,7 @@ function GeometryStack.addAttributeDependency!(String from, String to) {
 }
 
 
-function GeometryStack.addGeometryOperator!(GeometryOperator op) {
+function GeometryStack.addGeometryOperator!(BaseGenerator op) {
   this.geomOperators.push(op);
   this.cachePoints.resize(this.geomOperators.size());
 
@@ -93,7 +93,8 @@ function GeometryStack.notify!(Notifier notifier, String type, String data) {
   switch(type){
   case 'changed':
     for(Integer i=0; i<this.geomOperators.size(); i++){
-      Notifier op = this.geomOperators[i];
+      BaseGenerator bg = this.geomOperators[i];
+      Notifier op = bg;
       if(op === notifier){
         if(i < this.dirtyPoint)
           this.dirtyPoint = i;
